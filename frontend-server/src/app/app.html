@@ -5,11 +5,6 @@
   <div class="ms-3">
     <h1 id="titulo" class="mb-0">{{ title() }}</h1>
   </div>
-  <div class="ms-auto">
-    <button class="btn btn-success" (click)="crearProducto()">
-      Crear Producto
-    </button>
-  </div>
 </nav>
 
 <div class="container-fluid mt-3">
@@ -24,10 +19,21 @@
         (input)="listFilter.set($any($event.target).value)"
       >
     </div>
-    <div class="col-auto">
+    <div class="col-md-4">
       Filtrado por: {{ listFilter() }}
     </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" (click)="abrirModal()">
+        Crear Producto
+      </button>
+    </div>
   </div>
+
+  <br>
+  @if (isModalOpen()) {
+    <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  }
+  <br>
 
   @if (showChildren()) {
     <app-product-list
