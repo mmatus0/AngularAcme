@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,11 +8,20 @@ import { CommonModule } from '@angular/common';
   templateUrl: './star.html',
   styleUrls: ['./star.css'],
 })
-export class Star {
+export class Star implements OnChanges {
 
   @Input() rating: number = 0;
 
-  stars = signal(4);
+  // Array de estrellas llenas (hasta 5 máximo)
+  fullStars: number[] = [];
+  // Estrellas vacías para completar hasta 5
+  emptyStars: number[] = [];
 
-  arr: any[] = new Array(this.stars()).fill(1);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['rating']) {
+      const full = Math.round(this.rating);
+      this.fullStars = new Array(Math.min(full, 5)).fill(0);
+      this.emptyStars = new Array(Math.max(5 - full, 0)).fill(0);
+    }
+  }
 }

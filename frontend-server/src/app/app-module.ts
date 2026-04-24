@@ -1,19 +1,3 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-
-import { App } from './app';
-import { ProductList } from './product/product-list/product-list';
-import { Star } from './product/product-list/star/star';
-
-@NgModule({
-  declarations: [
-    App,
-    ProductList,
-    Star
-  ],
-  imports: [
-    BrowserModule
-  ],
-  bootstrap: [App]
-})
-export class AppModule { }
+// Este archivo se mantiene por compatibilidad pero el bootstrap
+// ahora usa bootstrapApplication() en main.ts (modo standalone).
+// Los componentes standalone (App, ProductList, Star) NO se declaran en NgModule.

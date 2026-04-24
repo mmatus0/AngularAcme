@@ -1,47 +1,76 @@
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand navbar-dark bg-primary px-3">
   <a class="navbar-brand" href="#">
-    <img src="https://staceydavid.com/sites/default/files/styles/max_325x325/public/2019-01/ACME_logo_100.png?itok=b2SgsVFr" width="80" alt="ACME Logo">
+    <img src="ACME-Logo-1981.png" width="80" alt="ACME Logo"
+         onerror="this.src='https://staceydavid.com/sites/default/files/styles/max_325x325/public/2019-01/ACME_logo_100.png?itok=b2SgsVFr'">
   </a>
   <div class="ms-3">
-    <h1 id="titulo" class="mb-0">{{ title() }}</h1>
+    <h1 id="titulo" class="mb-0 fs-4">{{ title() }}</h1>
   </div>
 </nav>
 
 <div class="container-fluid mt-3">
 
+  <!-- AVISO BACKEND -->
+  @if (errorBackend()) {
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ errorBackend() }}
+      <button type="button" class="btn-close" (click)="errorBackend.set('')"></button>
+    </div>
+  }
+  @if (cargandoBackend()) {
+    <div class="alert alert-info">
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Cargando productos desde el backend...
+    </div>
+  }
+
   <!-- FILTRO -->
   <div class="row mb-3 align-items-center">
-    <div class="col-auto">Filtrar por:</div>
-
+    <div class="col-auto fw-semibold">Filtrar por:</div>
     <div class="col-md-4">
       <input
         type="text"
         class="form-control"
+        placeholder="Nombre del producto..."
         [value]="listFilter()"
         (input)="listFilter.set($any($event.target).value)"
       >
     </div>
-
-    <div class="col-auto">
-      Filtrado por: {{ listFilter() }}
-    </div>
+    @if (listFilter()) {
+      <div class="col-auto text-muted">
+        Filtrado por: <strong>{{ listFilter() }}</strong>
+        — {{ filteredProducts().length }} resultado(s)
+      </div>
+    }
   </div>
 
-  <div class="row mb-3 align-items-center">
-
+  <!-- CONTROLES -->
+  <div class="row mb-3 align-items-center g-2">
     <div class="col-auto">
-      Dato recibido: {{ datoRecibido() }}
-    </div>
-
-    <div class="col-auto">
-      <button class="btn btn-primary" (click)="toggleChildren()">
-        <i class="bi bi-eye"></i>
-        {{ showChildren() ? 'Ocultar Hijo' : 'Mostrar Hijo' }}
+      <button class="btn btn-outline-secondary" (click)="toggleChildren()">
+        <i class="bi bi-eye me-1"></i>
+        {{ showChildren() ? 'Ocultar componente hijo' : 'Mostrar componente hijo' }}
       </button>
     </div>
-
+    <div class="col-auto">
+      <button class="btn btn-outline-primary" (click)="cargarProductos()">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Recargar desde backend
+      </button>
+    </div>
+    @if (datoRecibido()) {
+      <div class="col-auto">
+        <span class="badge bg-success fs-6">
+          <i class="bi bi-arrow-down-circle me-1"></i>
+          Dato recibido del hijo: {{ datoRecibido() }}
+        </span>
+      </div>
+    }
   </div>
 
+  <!-- COMPONENTE HIJO (product-list con Output/Input) -->
   @if (showChildren()) {
     <app-product-list
       [datos]="filteredProducts()"
@@ -49,9 +78,14 @@
     </app-product-list>
   }
 
-  <div class="card">
-    <div class="card-header bg-primary text-white">
-      Lista de Productos
+  <!-- TABLA PRINCIPAL CON IMÁGENES Y ESTRELLAS -->
+  <div class="card mt-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-box-seam me-2"></i>Catálogo de Productos</span>
+      <button class="btn btn-sm btn-outline-light" (click)="toggleImage()">
+        <i class="bi bi-image me-1"></i>
+        {{ showImage() ? 'Ocultar imágenes' : 'Mostrar imágenes' }}
+      </button>
     </div>
 
     <div class="card-body p-0">
@@ -60,14 +94,11 @@
         @if (filteredProducts().length > 0) {
 
           <table class="table table-striped mb-0 align-middle">
-            <thead>
+            <thead class="table-dark">
               <tr>
-                <th>
-                  <button class="btn btn-primary btn-sm" (click)="toggleImage()">
-                    <i class="bi bi-eye"></i>
-                    {{ showImage() ? 'Ocultar Imágenes' : 'Mostrar Imágenes' }}
-                  </button>
-                </th>
+                @if (showImage()) {
+                  <th class="text-center">Imagen</th>
+                }
                 <th>Producto</th>
                 <th>Código</th>
                 <th>Disponible</th>
@@ -79,37 +110,39 @@
             <tbody>
               @for (producto of filteredProducts(); track producto.productCode) {
                 <tr>
-                  <td class="text-center">
-                    @if (showImage()) {
+                  @if (showImage()) {
+                    <td class="text-center">
                       <img
                         [src]="producto.imageUrl"
                         [alt]="producto.productName"
-                        width="50"
+                        width="60"
                         class="img-thumbnail"
+                        onerror="this.src='https://via.placeholder.com/60?text=Sin+imagen'"
                       >
-                    }
-                  </td>
-
+                    </td>
+                  }
                   <td>{{ producto.productName }}</td>
-                  <td class="text-uppercase">{{ producto.productCode }}</td>
-                  <td>{{ producto.releaseDater }}</td>
-                  <td>{{ producto.price }}</td>
-                  <td>{{ producto.starRating }}</td>
+                  <td class="text-uppercase font-monospace">{{ producto.productCode }}</td>
+                  <td>{{ producto.releaseDate }}</td>
+                  <td>{{ producto.price | currency:'USD' }}</td>
+                  <td>
+                    <app-star [rating]="producto.starRating"></app-star>
+                    <small class="text-muted ms-1">({{ producto.starRating }})</small>
+                  </td>
                 </tr>
               }
             </tbody>
-
           </table>
 
         } @else {
-
-          <div class="p-3 text-center">
-            No hay productos disponibles
+          <div class="p-4 text-center text-muted">
+            <i class="bi bi-search fs-3 d-block mb-2"></i>
+            No hay productos que coincidan con el filtro
           </div>
-
         }
 
       </div>
     </div>
   </div>
+
 </div>

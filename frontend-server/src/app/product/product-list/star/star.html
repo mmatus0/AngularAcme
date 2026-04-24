@@ -1,5 +1,8 @@
-<div class="crop" [title]="rating()">
-  @for (i of arr; track i) {
-    <i class="bi bi-star-fill"></i>
+<div class="stars" [title]="rating">
+  @for (i of fullStars; track $index) {
+    <i class="bi bi-star-fill text-warning"></i>
+  }
+  @for (i of emptyStars; track $index) {
+    <i class="bi bi-star text-secondary"></i>
   }
 </div>

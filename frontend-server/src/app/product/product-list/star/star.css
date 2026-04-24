@@ -1,7 +1,6 @@
-.crop{
-    overflow: hidden;
-}
-
-div{
-    cursor: pointer;
+.stars {
+  cursor: pointer;
+  display: inline-flex;
+  gap: 2px;
+  font-size: 1rem;
 }

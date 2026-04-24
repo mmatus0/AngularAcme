@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IProduct } from '../../product';
 import { Star } from './star/star';
@@ -11,5 +11,12 @@ import { Star } from './star/star';
   styleUrls: ['./product-list.css'],
 })
 export class ProductList {
-  @Input('datos') product: IProduct[] = [];
+
+  @Input('datos') products: IProduct[] = [];
+
+  @Output() datoEmitido = new EventEmitter<string>();
+
+  enviarDato(): void {
+    this.datoEmitido.emit('Hola desde el hijo ProductList 🚀');
+  }
 }
