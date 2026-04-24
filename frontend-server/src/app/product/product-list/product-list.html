@@ -1,0 +1,51 @@
+<div class="card">
+    <div class="card">
+
+        <!-- HEADER -->
+        <div class="card-header bg-dark text-white">
+            Lista de Productos
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- TABLA -->
+            @if(product && product.length){
+
+            
+              <table class="table table-striped table-hover">
+                  <thead class="table-dark">
+                      <tr>
+                          <th>ID</th>
+                          <th>Producto</th>
+                          <th>Precio</th>
+                          <th>Código</th>
+                          <th>Fecha</th>
+                          <th>Rating</th>
+                      </tr>
+                  </thead>
+
+                  <tbody>
+                    @for(producto of product; track producto){
+                      <tr>
+                        <td>{{producto.productId}}</td>
+                        <td>{{producto.productName}}</td>
+                        <td>{{producto.price}}</td>
+                        <td>{{producto.productCode}}</td>
+                        <td>{{producto.releaseDater}}</td>
+                       <!-- <td>{{producto.starRating}}</td> -->
+                        <td>
+                          <app-star></app-star>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+
+              </table>
+            }@else{
+              <p> No hay productos disponibles </p>
+            }
+
+        </div>
+    </div>
+</div>
