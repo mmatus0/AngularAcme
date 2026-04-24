@@ -61,4 +61,5 @@ export class ProductService {
     };
     return this.http.put(`${this.urlProducto}/${id}`, body);
   }
+
 }

@@ -1,27 +1,18 @@
 <div class="card">
   <div class="card">
-
-    <!-- HEADER -->
     <div class="card-header bg-dark text-white">
       Lista de Productos
     </div>
-
-    
     <div class="card-body">
 
-    
       <button class="btn btn-primary mb-2" (click)="toggleImage()">
         {{ showImage ? 'Ocultar Imágenes' : 'Mostrar Imágenes' }}
       </button>
-
-      
       <button class="btn btn-secondary mb-2 ms-2" (click)="enviarDato()">
         Enviar dato al padre
       </button>
 
-      
       @if (products && products.length) {
-
         <table class="table table-striped table-hover">
           <thead class="table-dark">
             <tr>
@@ -31,37 +22,34 @@
               <th>Código</th>
               <th>Fecha</th>
               <th>Rating</th>
+              <th>Acciones</th>
             </tr>
           </thead>
-
           <tbody>
             @for (producto of products; track producto) {
               <tr>
                 <td>
-                 
                   @if (showImage) {
-                    <img
-                      [src]="producto.imageUrl"
-                      [title]="producto.productName | uppercase"
-                      width="50"
-                    >
+                    <img [src]="producto.imageUrl" [title]="producto.productName | uppercase" width="50">
                   }
                 </td>
                 <td>{{ producto.productName }}</td>
-                
                 <td>{{ producto.price | currency:'EUR':true:'1.2-2' }}</td>
-                
                 <td>{{ producto.productCode | lowercase }}</td>
                 <td>{{ producto.releaseDate }}</td>
+                <td><app-star [rating]="producto.starRating"></app-star></td>
                 <td>
-               
-                  <app-star [rating]="producto.starRating"></app-star>
+                  <button class="btn btn-danger btn-sm me-1" (click)="borrarProducto(producto.productId)">
+                    Borrar
+                  </button>
+                  <button class="btn btn-warning btn-sm" (click)="editarProducto(producto)">
+                    Actualizar
+                  </button>
                 </td>
               </tr>
             }
           </tbody>
         </table>
-
       } @else {
         <p>No hay productos disponibles</p>
       }
