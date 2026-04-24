@@ -10,18 +10,15 @@ import { CommonModule } from '@angular/common';
 })
 export class Star implements OnChanges {
 
+  // Declaramos una variable que almacenará el rating del producto — PDF 5.6b
   @Input() rating: number = 0;
 
-  // Array de estrellas llenas (hasta 5 máximo)
-  fullStars: number[] = [];
-  // Estrellas vacías para completar hasta 5
-  emptyStars: number[] = [];
+  // Declaramos un arreglo con tantas celdas como estrellas tenga un producto — PDF 5.6b
+  arr: any[] = [];
 
+  // Usamos el hook ngOnChanges para recalcular el tamaño de las estrellas — PDF 5.6b
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['rating']) {
-      const full = Math.round(this.rating);
-      this.fullStars = new Array(Math.min(full, 5)).fill(0);
-      this.emptyStars = new Array(Math.max(5 - full, 0)).fill(0);
-    }
+    console.log('Star: ngOnChanges');
+    this.arr = new Array(Math.round(this.rating)).fill(1);
   }
 }

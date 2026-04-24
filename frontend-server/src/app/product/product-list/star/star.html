@@ -1,8 +1,7 @@
-<div class="stars" [title]="rating">
-  @for (i of fullStars; track $index) {
-    <i class="bi bi-star-fill text-warning"></i>
-  }
-  @for (i of emptyStars; track $index) {
-    <i class="bi bi-star text-secondary"></i>
+<!-- Usamos property binding para colocar el rating como título — PDF 5.6b -->
+<div class="crop" [title]="rating">
+  <!-- Generamos dinámicamente cada estrella ciclando sobre el arreglo — PDF 5.6b -->
+  @for (i of arr; track i) {
+    <i class="bi bi-star-fill"></i>
   }
 </div>

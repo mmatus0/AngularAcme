@@ -12,11 +12,37 @@ import { Star } from './star/star';
 })
 export class ProductList {
 
+  
   @Input('datos') products: IProduct[] = [];
 
+ 
   @Output() datoEmitido = new EventEmitter<string>();
 
+  
+  showImage: boolean = false;
+
+  toggleImage(): void {
+    this.showImage = !this.showImage;
+  }
+
   enviarDato(): void {
-    this.datoEmitido.emit('Hola desde el hijo ProductList 🚀');
+    this.datoEmitido.emit('Hola desde el hijo 🚀');
+  }
+
+ 
+  constructor() {
+    console.log('Hijo: constructor');
+  }
+
+  ngOnInit(): void {
+    console.log('Hijo: ngOnInit');
+  }
+
+  ngOnChanges(): void {
+    console.log('Hijo: ngOnChanges');
+  }
+
+  ngOnDestroy(): void {
+    console.log('Hijo: ngOnDestroy');
   }
 }

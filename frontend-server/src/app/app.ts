@@ -1,26 +1,29 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ProductList } from './product/product-list/product-list';
-import { Star } from './product/product-list/star/star';
-import { IProduct } from './product';
-import { ProductService } from './services/product.service';
+import { IProduct, ProductService } from './product';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, ProductList, Star, CurrencyPipe],
+  imports: [CommonModule, FormsModule, HttpClientModule, ProductList],
   templateUrl: './app.html',
 })
 export class App implements OnInit {
 
+  
   constructor(private productService: ProductService) {
     console.log('Padre: constructor');
   }
 
   ngOnInit(): void {
     console.log('Padre: ngOnInit');
-    this.cargarProductos();
+    
+    this.productService.getProducts().subscribe(res => {
+      this.products.set(res.productos);
+    });
   }
 
   ngOnChanges(): void {
@@ -32,53 +35,55 @@ export class App implements OnInit {
   }
 
   title = signal('Empresa ACME');
-  listFilter = signal('');
-  showImage = signal(true);
-  showChildren = signal(true);
-  datoRecibido = signal('');
-  cargandoBackend = signal(false);
-  errorBackend = signal('');
 
+
+  listFilter = signal('');
+
+  showChildren = signal(true);
+
+  datoRecibido = signal('');
+
+  
   products = signal<IProduct[]>([
     {
       productId: 1,
-      productName: 'Zapatillas de lona',
-      productCode: 'GDN-0011',
+      productName: 'Laptop',
+      productCode: 'TBX-0048',
       releaseDate: 'March 19, 2016',
       price: 19.95,
-      description: 'Zapatillas cómodas para uso diario.',
+      description: 'Laptop de uso general.',
       starRating: 3.2,
       imageUrl: 'laptop1.jpg'
     },
     {
       productId: 2,
-      productName: 'Bolso de cuero',
-      productCode: 'GDN-0023',
+      productName: 'Auriculares',
+      productCode: 'GDN-0011',
       releaseDate: 'March 18, 2016',
       price: 32.99,
-      description: 'Bolso resistente y elegante.',
+      description: 'Auriculares inalámbricos.',
       starRating: 4.2,
       imageUrl: 'auriculares.jpg'
     },
     {
       productId: 3,
-      productName: 'Reloj antiguo',
-      productCode: 'TBX-0048',
+      productName: 'Monitor',
+      productCode: 'TBX-0022',
       releaseDate: 'May 21, 2016',
       price: 8.9,
-      description: 'Reloj clásico decorativo.',
+      description: 'Monitor Full HD.',
       starRating: 4.8,
-      imageUrl: 'smartwatch.jpg'
+      imageUrl: 'monitor.jpg'
     },
     {
       productId: 4,
-      productName: 'Cámara fotográfica',
-      productCode: 'TBX-0022',
+      productName: 'Smartphone',
+      productCode: 'GDN-0023',
       releaseDate: 'May 15, 2016',
       price: 11.55,
-      description: 'Cámara fotográfica clásica.',
+      description: 'Smartphone de última generación.',
       starRating: 3.7,
-      imageUrl: 'monitor.jpg'
+      imageUrl: 'smartphone.jpg'
     }
   ]);
 
@@ -88,28 +93,28 @@ export class App implements OnInit {
     )
   );
 
-  cargarProductos(): void {
-    this.cargandoBackend.set(true);
-    this.errorBackend.set('');
-    this.productService.getProductos().subscribe({
-      next: (resp) => {
-        if (resp.ok && resp.productos.length > 0) {
-          this.products.set(resp.productos);
-        }
-        this.cargandoBackend.set(false);
-      },
-      error: () => {
-        this.errorBackend.set('Backend no disponible — mostrando datos locales');
-        this.cargandoBackend.set(false);
-      }
-    });
-  }
-
-  toggleImage(): void {
-    this.showImage.set(!this.showImage());
-  }
-
   toggleChildren(): void {
     this.showChildren.update(value => !value);
+  }
+
+  crearProducto(): void {
+    const nuevoProducto: IProduct = {
+      productId: 0,
+      productName: 'Nuevo Producto',
+      productCode: this.productService.generarCodigo(),
+      releaseDate: new Date().toLocaleDateString(),
+      price: Math.round(Math.random() * 100),
+      description: 'Descripción del nuevo producto',
+      starRating: Math.round(Math.random() * 5),
+      imageUrl: 'tablet.jpg'
+    };
+
+    this.productService.saveProduct(nuevoProducto).subscribe(res => {
+      console.log('Producto creado:', res);
+     
+      this.productService.getProducts().subscribe(res2 => {
+        this.products.set(res2.productos);
+      });
+    });
   }
 }

@@ -1,49 +1,71 @@
-<div class="card mt-3">
+<div class="card">
+  <div class="card">
 
-  <!-- HEADER -->
-  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-    <span>Lista de Productos (Componente Hijo)</span>
-    <button class="btn btn-sm btn-outline-light" (click)="enviarDato()">
-      Enviar dato al padre
-    </button>
-  </div>
+    <!-- HEADER -->
+    <div class="card-header bg-dark text-white">
+      Lista de Productos
+    </div>
 
-  <!-- BODY -->
-  <div class="card-body p-0">
+    
+    <div class="card-body">
 
-    @if (products && products.length) {
+    
+      <button class="btn btn-primary mb-2" (click)="toggleImage()">
+        {{ showImage ? 'Ocultar Imágenes' : 'Mostrar Imágenes' }}
+      </button>
 
-      <table class="table table-striped table-hover mb-0 align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Código</th>
-            <th>Fecha</th>
-            <th>Rating</th>
-          </tr>
-        </thead>
+      
+      <button class="btn btn-secondary mb-2 ms-2" (click)="enviarDato()">
+        Enviar dato al padre
+      </button>
 
-        <tbody>
-          @for (producto of products; track producto.productCode) {
+      
+      @if (products && products.length) {
+
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
             <tr>
-              <td>{{ producto.productId }}</td>
-              <td>{{ producto.productName }}</td>
-              <td>{{ producto.price | currency:'CLP':'symbol':'1.0-0' }}</td>
-              <td class="text-uppercase">{{ producto.productCode }}</td>
-              <td>{{ producto.releaseDate }}</td>
-              <td>
-                <app-star [rating]="producto.starRating"></app-star>
-              </td>
+              <th></th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Código</th>
+              <th>Fecha</th>
+              <th>Rating</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
 
-    } @else {
-      <p class="p-3 text-center text-muted">No hay productos disponibles</p>
-    }
+          <tbody>
+            @for (producto of products; track producto) {
+              <tr>
+                <td>
+                 
+                  @if (showImage) {
+                    <img
+                      [src]="producto.imageUrl"
+                      [title]="producto.productName | uppercase"
+                      width="50"
+                    >
+                  }
+                </td>
+                <td>{{ producto.productName }}</td>
+                
+                <td>{{ producto.price | currency:'EUR':true:'1.2-2' }}</td>
+                
+                <td>{{ producto.productCode | lowercase }}</td>
+                <td>{{ producto.releaseDate }}</td>
+                <td>
+               
+                  <app-star [rating]="producto.starRating"></app-star>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
 
+      } @else {
+        <p>No hay productos disponibles</p>
+      }
+
+    </div>
   </div>
 </div>
