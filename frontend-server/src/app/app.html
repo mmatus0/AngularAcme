@@ -5,6 +5,11 @@
   <div class="ms-3">
     <h1 id="titulo" class="mb-0">{{ title() }}</h1>
   </div>
+  <div class="ms-auto">
+    <button class="btn btn-success" (click)="crearProducto()">
+      Crear Producto
+    </button>
+  </div>
 </nav>
 
 <div class="container-fluid mt-3">
@@ -24,28 +29,11 @@
     </div>
   </div>
 
-  <div class="row mb-3 align-items-center">
-    <div class="col-auto">
-      Dato recibido: {{ datoRecibido() }}
-    </div>
-    <div class="col-auto">
-      <button class="btn btn-primary" (click)="toggleChildren()">
-        <i class="bi bi-eye"></i>
-        {{ showChildren() ? 'Ocultar Hijo' : 'Mostrar Hijo' }}
-      </button>
-    </div>
-    <div class="col-auto">
-      <button class="btn btn-success" (click)="crearProducto()">
-        Crear Producto
-      </button>
-    </div>
-  </div>
-
   @if (showChildren()) {
     <app-product-list
       [datos]="filteredProducts()"
       (datoEmitido)="datoRecibido.set($event)"
-      (productosActualizados)="products.set($event)">
+      (productosActualizados)="products.set($any($event))">
     </app-product-list>
   }
 
