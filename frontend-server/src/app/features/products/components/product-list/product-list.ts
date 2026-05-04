@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IProduct, ProductService } from '../../product';
+import { IProduct } from '../../interfaces/product';
+import { Product } from '../../services/product';
 import { Star } from './star/star';
 
 @Component({
@@ -14,21 +15,15 @@ export class ProductList {
   @Input('datos') products: IProduct[] = [];
 
   @Output() datoEmitido = new EventEmitter<string>();
-  @Output() productosActualizados = new EventEmitter<IProduct[]>();
 
-  
   showImage: boolean = false;
 
-  constructor(private productService: ProductService) {
+  constructor(private productService: Product) {
     console.log('Hijo: constructor');
   }
 
   toggleImage(): void {
     this.showImage = !this.showImage;
-  }
-
-  enviarDato(): void {
-    this.datoEmitido.emit('Hola desde el hijo 🚀');
   }
 
   ngOnInit(): void { console.log('Hijo: ngOnInit'); }
@@ -38,13 +33,12 @@ export class ProductList {
   borrarProducto(id: number): void {
     this.productService.deleteProduct(id).subscribe(() => {
       this.productService.getProducts().subscribe((res: any) => {
-        this.productosActualizados.emit(res.productos);
+        this.productService.products.set(res.productos);
       });
     });
   }
 
   editarProducto(producto: IProduct): void {
-  
     const productoActualizado: IProduct = {
       ...producto,
       price:       Math.round(Math.random() * 1000),
@@ -52,11 +46,9 @@ export class ProductList {
       productCode: this.productService.generarCodigo()
     };
     this.productService.updateProduct(producto.productId, productoActualizado).subscribe(() => {
-      
       this.productService.getProducts().subscribe((res: any) => {
-        this.productosActualizados.emit(res.productos);
+        this.productService.products.set(res.productos);
       });
     });
   }
-
 }

@@ -35,12 +35,9 @@
   }
   <br>
 
-  @if (showChildren()) {
-    <app-product-list
-      [datos]="filteredProducts()"
-      (datoEmitido)="datoRecibido.set($event)"
-      (productosActualizados)="products.set($any($event))">
-    </app-product-list>
-  }
+  <app-product-list
+    [datos]="filteredProducts()"
+    (updatedProducts)="this.productService.products.set($any($event))">
+  </app-product-list>
 
 </div>

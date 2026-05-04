@@ -181,6 +181,19 @@ app.delete('/producto/:id', (req, res) => {
     });
 });
 
+// GET - Verificar si existe producto por código
+app.get('/existeproducto/:code', (req, res) => {
+    const sql = 'SELECT * FROM productos WHERE productCode = ?';
+    conn.query(sql, [req.params.code], (err, results) => {
+        if (err) throw err;
+        res.status(200).json({
+            ok: true,
+            data: results[0],
+            existe: results.length > 0
+        });
+    });
+});
+
 // Escuchar peticiones
 app.listen(3000, function () {
     console.log('Servidor backend escuchando en puerto 3000');

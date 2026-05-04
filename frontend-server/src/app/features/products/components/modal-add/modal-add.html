@@ -1,0 +1,107 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form [formGroup]="formProduct" (ngSubmit)="saveData()" novalidate>
+
+        <div class="modal-header">
+          <h4 class="modal-title">Crear Producto</h4>
+          <button type="button" class="close" data-dismiss="modal"
+            (click)="ocultarModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- Nombre del Producto -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Nombre</label>
+            <div class="col-md-10">
+              <input formControlName="name" type="text" class="form-control" placeholder="Nombre">
+              @if (formProduct.get('name')?.errors &&
+                  (formProduct.get('name')?.touched || formProduct.get('name')?.dirty)) {
+                <div class="alert alert-danger">El nombre del producto es obligatorio.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Código del Producto -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Código</label>
+            <div class="col-md-10">
+              <input formControlName="code" type="text" class="form-control" placeholder="Código">
+              @if (formProduct.get('code')?.pending) {
+                <span class="text-info">Buscando...</span>
+              }
+              @if (formProduct.get('code')?.errors?.['codeExists']) {
+                <div class="alert alert-danger">El código ya existe</div>
+              }
+              @if (formProduct.get('code')?.errors &&
+                  (formProduct.get('code')?.touched || formProduct.get('code')?.dirty) &&
+                  !formProduct.get('code')?.errors?.['codeExists'] &&
+                  !formProduct.get('code')?.pending) {
+                <div class="alert alert-danger">El código es obligatorio y debe tener al menos 7 caracteres.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Fecha de Registro -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Fecha</label>
+            <div class="col-md-10">
+              <input formControlName="date" type="date" class="form-control" placeholder="Fecha">
+              @if (formProduct.get('date')?.errors &&
+                  (formProduct.get('date')?.touched || formProduct.get('date')?.dirty)) {
+                <div class="alert alert-danger">La fecha es obligatoria.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Precio del Producto -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Precio</label>
+            <div class="col-md-10">
+              <input formControlName="price" type="number" class="form-control" placeholder="Precio">
+              @if (formProduct.get('price')?.errors &&
+                  (formProduct.get('price')?.touched || formProduct.get('price')?.dirty)) {
+                <div class="alert alert-danger">El precio es obligatorio y debe ser mayor o igual a 0.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Rating</label>
+            <div class="col-md-10">
+              <input formControlName="rating" type="number" class="form-control" placeholder="Rating">
+              @if (formProduct.get('rating')?.errors &&
+                  (formProduct.get('rating')?.touched || formProduct.get('rating')?.dirty)) {
+                <div class="alert alert-danger">El rating es obligatorio y debe estar entre 1 y 200.</div>
+              }
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group row">
+            <label class="col-2 col-form-label">Descripción</label>
+            <div class="col-md-10">
+              <input formControlName="description" type="text" class="form-control" placeholder="Descripción">
+              @if (formProduct.get('description')?.errors &&
+                  (formProduct.get('description')?.touched || formProduct.get('description')?.dirty)) {
+                <div class="alert alert-danger">La descripción es obligatoria.</div>
+              }
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" [disabled]="formProduct.invalid" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal"
+            (click)="ocultarModal()">Cerrar</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
