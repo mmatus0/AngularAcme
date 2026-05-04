@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../services/product';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-add',
@@ -46,8 +47,24 @@ export class ModalAdd {
   }
 
   saveData(): void {
-    console.log('Guardando producto:', this.formProduct.value);
-  }
+  const producto = this.formProduct.value;
+  const nuevoProducto = {
+    productId:   0,
+    productName: producto.name ?? '',
+    productCode: producto.code ?? '',
+    releaseDate: producto.date ?? '',
+    price:       producto.price ?? 0,
+    description: producto.description ?? '',
+    starRating:  producto.rating ?? 0,
+    imageUrl:    ''
+  };
+  this.productService.saveProduct(nuevoProducto).pipe(
+    switchMap(() => this.productService.getProducts())
+  ).subscribe((res: any) => {
+    this.productService.products.set(res.productos);
+    this.close.emit();
+  });
+}
 
   ocultarModal(): void {
     this.close.emit();

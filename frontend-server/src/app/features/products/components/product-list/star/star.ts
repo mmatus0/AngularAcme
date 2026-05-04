@@ -19,6 +19,6 @@ export class Star implements OnChanges {
   // Usamos el hook ngOnChanges para recalcular el tamaño de las estrellas — PDF 5.6b
   ngOnChanges(changes: SimpleChanges): void {
     console.log('Star: ngOnChanges');
-    this.arr = new Array(Math.round(this.rating)).fill(1);
+    this.arr = new Array(Math.min(Math.round(this.rating), 5)).fill(1);
   }
 }
