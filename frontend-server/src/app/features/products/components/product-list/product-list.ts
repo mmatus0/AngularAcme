@@ -1,34 +1,52 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, signal, computed, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IProduct } from '../../interfaces/product';
 import { Product } from '../../services/product';
 import { Star } from './star/star';
+import { ModalAdd } from '../modal-add/modal-add';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, Star],
+  imports: [CommonModule, FormsModule, Star, ModalAdd],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.css'],
 })
-export class ProductList {
-  @Input('datos') products: IProduct[] = [];
+export class ProductList implements OnInit {
 
-  @Output() datoEmitido = new EventEmitter<string>();
+  private productService = inject(Product);
 
-  showImage: boolean = false;
+  listFilter = signal('');
+  showImage  = false;
+  isModalOpen = signal(false);
 
-  constructor(private productService: Product) {
-    console.log('Hijo: constructor');
+  filteredProducts = computed(() =>
+    this.productService.products().filter(p =>
+      p.productName.toLowerCase().includes(this.listFilter().toLowerCase())
+    )
+  );
+
+  ngOnInit(): void {
+    this.productService.getProducts().subscribe((res: any) => {
+      this.productService.products.set(res.productos);
+    });
   }
 
   toggleImage(): void {
     this.showImage = !this.showImage;
   }
 
-  ngOnInit(): void { console.log('Hijo: ngOnInit'); }
-  ngOnChanges(): void { console.log('Hijo: ngOnChanges'); }
-  ngOnDestroy(): void { console.log('Hijo: ngOnDestroy'); }
+  abrirModal(): void {
+    this.isModalOpen.set(true);
+  }
+
+  cerrarModal(): void {
+    this.isModalOpen.set(false);
+    this.productService.getProducts().subscribe((res: any) => {
+      this.productService.products.set(res.productos);
+    });
+  }
 
   borrarProducto(id: number): void {
     this.productService.deleteProduct(id).subscribe(() => {

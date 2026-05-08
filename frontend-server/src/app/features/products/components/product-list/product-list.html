@@ -1,6 +1,30 @@
-<div class="card">
-  <div class="card">
+<div class="container-fluid mt-3">
 
+  <div class="row mb-3 align-items-center">
+    <div class="col-auto">Filtrar por:</div>
+    <div class="col-md-4">
+      <input
+        type="text"
+        class="form-control"
+        [value]="listFilter()"
+        (input)="listFilter.set($any($event.target).value)"
+      >
+    </div>
+    <div class="col-md-4">
+      Filtrado por: {{ listFilter() }}
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" (click)="abrirModal()">
+        Crear Producto
+      </button>
+    </div>
+  </div>
+
+  @if (isModalOpen()) {
+    <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  }
+
+  <div class="card">
     <div class="card-header bg-dark text-white">
       Lista de Productos
     </div>
@@ -12,7 +36,7 @@
         {{ showImage ? 'Ocultar Imágenes' : 'Mostrar Imágenes' }}
       </button>
 
-      @if (products && products.length) {
+      @if (filteredProducts() && filteredProducts().length) {
 
         <table class="table table-striped table-hover">
           <thead class="table-dark">
@@ -28,7 +52,7 @@
           </thead>
 
           <tbody>
-            @for (producto of products; track producto) {
+            @for (producto of filteredProducts(); track producto.productId) {
               <tr>
                 <td>
                   @if (showImage) {
@@ -68,4 +92,5 @@
 
     </div>
   </div>
+
 </div>
