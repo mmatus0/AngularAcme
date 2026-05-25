@@ -1,15 +1,7 @@
-<!-- UI basada en estado de autenticación — Slide 20 -->
+<div class="d-flex" id="wrapper">
 
-<!-- Si el estado de autenticación es false, muestra el login -->
-@if (!authService.isAuthenticated()) {
-  <app-login></app-login>
-}
-
-<!-- Si el estado de autenticación es true, muestra la navegación -->
-@if (authService.isAuthenticated()) {
-  <div class="d-flex" id="wrapper">
-
-    <!-- Sidebar -->
+  <!-- Sidebar — controlado con @if según estado de autenticación — Slide 11 -->
+  @if (authService.isAuthenticated()) {
     <div class="bg-light border-end" id="sidebar-wrapper">
       <div class="sidebar-heading">
         <div class="user-panel">
@@ -63,12 +55,14 @@
         </ul>
       </div>
     </div>
-    <!-- /#sidebar-wrapper -->
+  }
+  <!-- /#sidebar-wrapper -->
 
-    <!-- Page Content -->
-    <div id="page-content-wrapper">
+  <!-- Page Content -->
+  <div id="page-content-wrapper">
 
-      <!-- Superior Bar -->
+    <!-- Superior Bar — controlado con @if según estado de autenticación — Slide 11/12 -->
+    @if (authService.isAuthenticated()) {
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
@@ -87,25 +81,23 @@
                 <a class="dropdown-item" href="#">Action</a>
                 <a class="dropdown-item" href="#">Another action</a>
                 <div class="dropdown-divider"></div>
-                <!-- Cerrar sesión — Slide 22 -->
-                <a class="dropdown-item text-danger" href="#" (click)="logout()">
-                  <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                </a>
+                <!-- Logout invoca authService.logout() — Slide 12 -->
+                <a class="dropdown-item text-danger" href="#" (click)="authService.logout()">Logout</a>
               </div>
             </li>
           </ul>
         </div>
       </nav>
+    }
 
-      <!-- Inner Content -->
-      <br>
-      <div class="container-fluid">
-        <router-outlet></router-outlet>
-      </div>
-
+    <!-- Inner Content — siempre visible para que el router-outlet funcione en /login -->
+    <br>
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
     </div>
-    <!-- /#page-content-wrapper -->
 
   </div>
-  <!-- /#wrapper -->
-}
+  <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->

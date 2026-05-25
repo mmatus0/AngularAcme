@@ -21,7 +21,7 @@ export class Product {
     return 'PROD' + Math.floor(Math.random() * 1000);
   }
 
-  // Recupera el token desde localStorage — Slide 19
+  // Recupera el token desde localStorage y arma el header Authorization
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
@@ -29,7 +29,6 @@ export class Product {
     });
   }
 
-  // Envía el token en los headers del request — Slide 19
   getProducts(): Observable<any> {
     return this.http.get(this.urlProductos, { headers: this.getAuthHeaders() });
   }
@@ -67,7 +66,7 @@ export class Product {
   searchProduct(code: string): Observable<any> {
     return timer(1000).pipe(
       switchMap(() => {
-        return this.http.get<any>(`http://localhost:3000/existeproducto/${code}`).pipe(
+        return this.http.get<any>(`http://localhost:3000/existeproducto/${code}`, { headers: this.getAuthHeaders() }).pipe(
           map((resp: any) => resp.data)
         );
       })

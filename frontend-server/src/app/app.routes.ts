@@ -4,11 +4,12 @@ import { Welcome } from './features/home/welcome/welcome';
 import { PageNotFound } from './features/not-found/page-not-found/page-not-found';
 import { ProductList } from './features/products/components/product-list/product-list';
 import { Login } from './features/auth/components/login/login';
+import { loginGuard } from './features/auth/guards/login-guard';
 
 export const routes: Routes = [
-    { path: 'home', component: Welcome },
-    { path: 'products', component: ProductList },
-    { path: 'login', component: Login },
+    { path: 'home',     component: Welcome,     canActivate: [loginGuard] },
+    { path: 'products', component: ProductList, canActivate: [loginGuard] },
+    { path: 'login',    component: Login },
 
     /* detalle de producto, usando estándar de recursos */
     // { path: 'products/:id', component: ProductId },

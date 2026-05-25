@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var fileUpload = require('express-fileupload');
 var path = require('path');
 var fs = require('fs');
+var jwt = require('jsonwebtoken');
 
 const bodyParser = require('body-parser');
 
@@ -11,10 +12,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload());
 
-// CORS para permitir peticiones desde el frontend Angular
+const SECRET_KEY = 'clave_secreta_acme';
+
+// CORS — se agrega Authorization para permitir el token en los headers
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
@@ -46,6 +49,22 @@ conn.connect((err) => {
     }
 });
 
+// Middleware para verificar el token JWT
+function verificarToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+        return res.status(401).json({ ok: false, mensaje: 'Token no proporcionado' });
+    }
+    const token = authHeader.split(' ')[1]; // Bearer <token>
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ ok: false, mensaje: 'Token inválido o expirado' });
+        }
+        req.usuario = decoded;
+        next();
+    });
+}
+
 // GET - Ruta raíz
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -54,8 +73,51 @@ app.get('/', (req, res) => {
     });
 });
 
-// GET - Obtener todos los productos
-app.get('/productos', (req, res) => {
+// POST - Login de usuario
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ ok: false, mensaje: 'Email y password son requeridos' });
+    }
+
+    const sql = 'SELECT * FROM usuarios WHERE userEmail = ? AND userPassword = ?';
+    conn.query(sql, [email, password], (err, results) => {
+        if (err) {
+            return res.status(500).json({ ok: false, mensaje: err.message });
+        }
+        if (results.length === 0) {
+            return res.status(401).json({ ok: false, mensaje: 'Credenciales incorrectas' });
+        }
+
+        const usuario = results[0];
+
+        // Generar token JWT con datos del usuario, expira en 24 horas
+        const token = jwt.sign(
+            { userId: usuario.userId, userEmail: usuario.userEmail, userRole: usuario.userRole },
+            SECRET_KEY,
+            { expiresIn: '24h' }
+        );
+
+        // Guardar token en la BD
+        conn.query('UPDATE usuarios SET userToken = ? WHERE userId = ?', [token, usuario.userId]);
+
+        res.status(200).json({
+            ok: true,
+            token: token,
+            usuario: {
+                userId:    usuario.userId,
+                userName:  usuario.userName,
+                userEmail: usuario.userEmail,
+                userRole:  usuario.userRole,
+                userImg:   usuario.userImg
+            }
+        });
+    });
+});
+
+// GET - Obtener todos los productos (protegido con token)
+app.get('/productos', verificarToken, (req, res) => {
     const sql = 'SELECT * FROM productos';
     conn.query(sql, (err, results) => {
         if (err) {
@@ -69,7 +131,7 @@ app.get('/productos', (req, res) => {
 });
 
 // GET - Obtener producto por id
-app.get('/producto/:id', (req, res) => {
+app.get('/producto/:id', verificarToken, (req, res) => {
     const { id } = req.params;
     const sql = 'SELECT * FROM productos WHERE productId = ?';
     conn.query(sql, [id], (err, results) => {
@@ -84,7 +146,7 @@ app.get('/producto/:id', (req, res) => {
 });
 
 // POST - Agregar producto
-app.post('/producto', (req, res) => {
+app.post('/producto', verificarToken, (req, res) => {
     const { name, code, date, price, description, rate, image } = req.body;
     const sql = `INSERT INTO productos
         (productName, productCode, releaseDate, price, description, starRating, imageUrl)
@@ -106,7 +168,7 @@ app.post('/producto', (req, res) => {
 });
 
 // PUT - Subir imagen de producto
-app.put('/upload/productos/:id', (req, res) => {
+app.put('/upload/productos/:id', verificarToken, (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({ ok: false, mensaje: 'No se ha seleccionado archivo' });
     }
@@ -144,7 +206,7 @@ app.put('/upload/productos/:id', (req, res) => {
 });
 
 // PUT - Actualizar datos de producto
-app.put('/producto/:id', (req, res) => {
+app.put('/producto/:id', verificarToken, (req, res) => {
     const { id } = req.params;
     const { name, code, date, price, description, rate, image } = req.body;
     const sql = `UPDATE productos SET
@@ -167,7 +229,7 @@ app.put('/producto/:id', (req, res) => {
 });
 
 // DELETE - Eliminar producto
-app.delete('/producto/:id', (req, res) => {
+app.delete('/producto/:id', verificarToken, (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM productos WHERE productId = ?';
     conn.query(sql, [id], (err, result) => {
@@ -182,7 +244,7 @@ app.delete('/producto/:id', (req, res) => {
 });
 
 // GET - Verificar si existe producto por código
-app.get('/existeproducto/:code', (req, res) => {
+app.get('/existeproducto/:code', verificarToken, (req, res) => {
     const sql = 'SELECT * FROM productos WHERE productCode = ?';
     conn.query(sql, [req.params.code], (err, results) => {
         if (err) throw err;
