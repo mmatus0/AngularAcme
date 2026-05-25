@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IProduct } from '../interfaces/product';
 import { map, switchMap } from 'rxjs/operators';
@@ -21,8 +21,17 @@ export class Product {
     return 'PROD' + Math.floor(Math.random() * 1000);
   }
 
+  // Recupera el token desde localStorage — Slide 19
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
+  // Envía el token en los headers del request — Slide 19
   getProducts(): Observable<any> {
-    return this.http.get(this.urlProductos);
+    return this.http.get(this.urlProductos, { headers: this.getAuthHeaders() });
   }
 
   saveProduct(producto: IProduct): Observable<any> {
@@ -35,11 +44,11 @@ export class Product {
       rate:        producto.starRating,
       image:       producto.imageUrl
     };
-    return this.http.post(this.urlProducto, body);
+    return this.http.post(this.urlProducto, body, { headers: this.getAuthHeaders() });
   }
 
   deleteProduct(id: number): Observable<any> {
-    return this.http.delete(`${this.urlProducto}/${id}`);
+    return this.http.delete(`${this.urlProducto}/${id}`, { headers: this.getAuthHeaders() });
   }
 
   updateProduct(id: number, producto: IProduct): Observable<any> {
@@ -52,18 +61,16 @@ export class Product {
       rate:        producto.starRating,
       image:       producto.imageUrl
     };
-    return this.http.put(`${this.urlProducto}/${id}`, body);
+    return this.http.put(`${this.urlProducto}/${id}`, body, { headers: this.getAuthHeaders() });
   }
 
   searchProduct(code: string): Observable<any> {
-  return timer(1000).pipe(
-    switchMap(() => {
-      return this.http.get<any>(`http://localhost:3000/existeproducto/${code}`).pipe(
-        map((resp: any) => resp.data)
-      );
-    })
-  );
-}
-
-
+    return timer(1000).pipe(
+      switchMap(() => {
+        return this.http.get<any>(`http://localhost:3000/existeproducto/${code}`).pipe(
+          map((resp: any) => resp.data)
+        );
+      })
+    );
+  }
 }

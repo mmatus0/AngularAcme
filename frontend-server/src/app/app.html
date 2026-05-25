@@ -1,99 +1,111 @@
-<div class="d-flex" id="wrapper">
+<!-- UI basada en estado de autenticación — Slide 20 -->
 
-  <!-- Sidebar -->
-  <div class="bg-light border-end" id="sidebar-wrapper">
-    <div class="sidebar-heading">
-      <div class="user-panel">
-        <div class="image">
-          <img width="100" alt="ACME Logo" class="rounded-circle" src="ACME-Logo-1981.png">
-        </div>
-        <div>
-          <p id="titulo">{{ title() }}</p>
+<!-- Si el estado de autenticación es false, muestra el login -->
+@if (!authService.isAuthenticated()) {
+  <app-login></app-login>
+}
+
+<!-- Si el estado de autenticación es true, muestra la navegación -->
+@if (authService.isAuthenticated()) {
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-light border-end" id="sidebar-wrapper">
+      <div class="sidebar-heading">
+        <div class="user-panel">
+          <div class="image">
+            <img width="100" alt="ACME Logo" class="rounded-circle" src="ACME-Logo-1981.png">
+          </div>
+          <div>
+            <p id="titulo">{{ title() }}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Menu -->
-    <div class="sidebar left">
-      <ul class="list-sidebar bg-defoult">
-        <li>
-          <a [routerLink]="['home']">
-            <i class="bi bi-house-door-fill"></i> Home
-          </a>
-        </li>
-        <li>
-          <a href="#" data-bs-toggle="collapse" data-bs-target="#productos" class="collapsed active">
-            <i class="bi bi-grid-fill"></i>
-            <span class="nav-label">Productos</span>
-            <span class="bi bi-chevron-right"></span>
-          </a>
-          <ul class="sub-menu collapse" id="productos">
-            <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i> Administrar</a></li>
-            <li><a href="#">Ver fichas</a></li>
-            <li><a href="#">Informes</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#">
-            <i class="bi bi-speedometer"></i>
-            <span class="nav-label">Dashboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="#" data-bs-toggle="collapse" data-bs-target="#usuarios" class="collapsed active">
-            <i class="bi bi-person"></i>
-            <span class="nav-label">Usuarios</span>
-            <span class="bi bi-chevron-right"></span>
-          </a>
-          <ul class="sub-menu collapse" id="usuarios">
-            <li><a href="#">Administrar</a></li>
-            <li><a href="#">Ver fichas</a></li>
-            <li><a href="#">Informes</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <!-- /#sidebar-wrapper -->
-
-  <!-- Page Content -->
-  <div id="page-content-wrapper">
-
-    <!-- Superior Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Dropdown
+      <!-- Menu -->
+      <div class="sidebar left">
+        <ul class="list-sidebar bg-defoult">
+          <li>
+            <a [routerLink]="['home']">
+              <i class="bi bi-house-door-fill"></i> Home
             </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
+          </li>
+          <li>
+            <a href="#" data-bs-toggle="collapse" data-bs-target="#productos" class="collapsed active">
+              <i class="bi bi-grid-fill"></i>
+              <span class="nav-label">Productos</span>
+              <span class="bi bi-chevron-right"></span>
+            </a>
+            <ul class="sub-menu collapse" id="productos">
+              <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i> Administrar</a></li>
+              <li><a href="#">Ver fichas</a></li>
+              <li><a href="#">Informes</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">
+              <i class="bi bi-speedometer"></i>
+              <span class="nav-label">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" data-bs-toggle="collapse" data-bs-target="#usuarios" class="collapsed active">
+              <i class="bi bi-person"></i>
+              <span class="nav-label">Usuarios</span>
+              <span class="bi bi-chevron-right"></span>
+            </a>
+            <ul class="sub-menu collapse" id="usuarios">
+              <li><a href="#">Administrar</a></li>
+              <li><a href="#">Ver fichas</a></li>
+              <li><a href="#">Informes</a></li>
+            </ul>
           </li>
         </ul>
       </div>
-    </nav>
-
-    <!-- Inner Content -->
-    <br>
-    <div class="container-fluid">
-      <router-outlet></router-outlet>
     </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <!-- Superior Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <!-- Cerrar sesión — Slide 22 -->
+                <a class="dropdown-item text-danger" href="#" (click)="logout()">
+                  <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Inner Content -->
+      <br>
+      <div class="container-fluid">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+    <!-- /#page-content-wrapper -->
 
   </div>
-  <!-- /#page-content-wrapper -->
-
-</div>
-<!-- /#wrapper -->h
- 
+  <!-- /#wrapper -->
+}
