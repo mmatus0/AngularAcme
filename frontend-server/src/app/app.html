@@ -1,6 +1,6 @@
 <div class="d-flex" id="wrapper">
 
-  <!-- Sidebar — controlado con @if según estado de autenticación — Slide 11 -->
+  <!-- Sidebar -->
   @if (authService.isAuthenticated()) {
     <div class="bg-light border-end" id="sidebar-wrapper">
       <div class="sidebar-heading">
@@ -35,18 +35,30 @@
             </ul>
           </li>
           <li>
+            <a [routerLink]="['numbers']">
+              <i class="bi bi-list-ol"></i>
+              <span class="nav-label">Números</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['users']">
+              <i class="bi bi-people-fill"></i>
+              <span class="nav-label">Usuarios</span>
+            </a>
+          </li>
+          <li>
             <a href="#">
               <i class="bi bi-speedometer"></i>
               <span class="nav-label">Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#usuarios" class="collapsed active">
+            <a href="#" data-bs-toggle="collapse" data-bs-target="#administracion" class="collapsed active">
               <i class="bi bi-person"></i>
-              <span class="nav-label">Usuarios</span>
+              <span class="nav-label">Administración</span>
               <span class="bi bi-chevron-right"></span>
             </a>
-            <ul class="sub-menu collapse" id="usuarios">
+            <ul class="sub-menu collapse" id="administracion">
               <li><a href="#">Administrar</a></li>
               <li><a href="#">Ver fichas</a></li>
               <li><a href="#">Informes</a></li>
@@ -61,7 +73,7 @@
   <!-- Page Content -->
   <div id="page-content-wrapper">
 
-    <!-- Superior Bar — controlado con @if según estado de autenticación — Slide 11/12 -->
+    <!-- Superior Bar -->
     @if (authService.isAuthenticated()) {
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -81,7 +93,6 @@
                 <a class="dropdown-item" href="#">Action</a>
                 <a class="dropdown-item" href="#">Another action</a>
                 <div class="dropdown-divider"></div>
-                <!-- Logout invoca authService.logout() — Slide 12 -->
                 <a class="dropdown-item text-danger" href="#" (click)="authService.logout()">Logout</a>
               </div>
             </li>
@@ -90,7 +101,7 @@
       </nav>
     }
 
-    <!-- Inner Content — siempre visible para que el router-outlet funcione en /login -->
+    <!-- Inner Content -->
     <br>
     <div class="container-fluid">
       <router-outlet></router-outlet>

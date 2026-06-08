@@ -1,0 +1,16 @@
+.virtual-scroll-wrap {
+    width: 50%;
+    margin: auto;
+    min-width: 380px;
+}
+
+cdk-virtual-scroll-viewport {
+    height: 100vh;
+}
+
+cdk-virtual-scroll-viewport li {
+    height: 50px;
+    list-style: none;
+    border: 1px solid #ccc;
+    padding: 12px 20px;
+}

@@ -1,0 +1,9 @@
+<div class="virtual-scroll-wrap">
+  <cdk-virtual-scroll-viewport [itemSize] ="50">
+    <ul>
+      <li *cdkVirtualFor="let item of numbers; let i = index">
+        Número: {{ i }}
+      </li>
+    </ul>
+  </cdk-virtual-scroll-viewport>
+</div>
