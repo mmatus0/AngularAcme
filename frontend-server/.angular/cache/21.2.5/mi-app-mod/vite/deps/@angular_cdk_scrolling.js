@@ -56,12 +56,12 @@ import {
   ɵɵstyleProp,
   ɵɵviewQuery
 } from "./chunk-DJ4QZ7JJ.js";
+import "./chunk-JRFR6BLO.js";
 import {
   animationFrameScheduler,
   asapScheduler,
   isObservable
 } from "./chunk-HWYXSU2G.js";
-import "./chunk-JRFR6BLO.js";
 import {
   ConnectableObservable,
   Observable,

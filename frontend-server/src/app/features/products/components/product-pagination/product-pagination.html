@@ -1,0 +1,26 @@
+<div class="container-fluid">
+  <h2>Lista de Productos (Paginación)</h2>
+
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>Imagen</th>
+        <th>Nombre</th>
+        <th>Código</th>
+        <th>Fecha</th>
+        <th>Precio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of data | paginate: { itemsPerPage: 5, currentPage: p, totalItems: total }">
+        <td><img [src]="item.image" width="50" height="50"></td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.code }}</td>
+        <td>{{ item.date }}</td>
+        <td>{{ item.price }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="p = $event"></pagination-controls>
+</div>

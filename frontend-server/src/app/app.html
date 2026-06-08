@@ -58,8 +58,9 @@
               <span class="nav-label">Administración</span>
               <span class="bi bi-chevron-right"></span>
             </a>
-            <ul class="sub-menu collapse" id="administracion">
-              <li><a href="#">Administrar</a></li>
+            <ul class="sub-menu collapse" id="productos">
+              <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i> Administrar</a></li>
+              <li><a [routerLink]="['product-pagination']"><i class="bi bi-list-ul"></i> Paginación</a></li>
               <li><a href="#">Ver fichas</a></li>
               <li><a href="#">Informes</a></li>
             </ul>
