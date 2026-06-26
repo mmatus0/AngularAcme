@@ -1,0 +1,60 @@
+<div class="container-fluid mt-3">
+  <div class="row mb-3">
+    <div class="col">
+      <h2><i class="bi bi-geo-alt-fill text-danger"></i> Mapa Google</h2>
+      <p class="text-muted">Haz click en el mapa para agregar marcadores</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <google-map
+        [center]="center()"
+        [zoom]="zoom()"
+        [options]="mapOptions()"
+        width="100%"
+        height="500px"
+        (mapClick)="agregarMarcador($event)">
+
+        @for (marcador of marcadores(); track marcador.title) {
+          <map-marker
+            #markerRef="mapMarker"
+            [position]="marcador.position"
+            [label]="marcador.label"
+            [title]="marcador.title"
+            (mapClick)="abrirInfoWindow(marcador, infoWindow, markerRef)">
+          </map-marker>
+        }
+
+        <map-info-window #infoWindow="mapInfoWindow">
+          @if (marcadorSeleccionado()) {
+            <div class="p-2">
+              <strong>{{ marcadorSeleccionado()!.title }}</strong><br>
+              <small class="text-muted">
+                Lat: {{ marcadorSeleccionado()!.position.lat | number:'1.4-4' }}<br>
+                Lng: {{ marcadorSeleccionado()!.position.lng | number:'1.4-4' }}
+              </small>
+            </div>
+          }
+        </map-info-window>
+
+      </google-map>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12">
+      <h5>Marcadores activos: {{ marcadores().length }}</h5>
+      <ul class="list-group">
+        @for (m of marcadores(); track m.title) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-geo-alt text-danger me-2"></i>{{ m.title }}</span>
+            <span class="badge bg-secondary">
+              {{ m.position.lat | number:'1.4-4' }}, {{ m.position.lng | number:'1.4-4' }}
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

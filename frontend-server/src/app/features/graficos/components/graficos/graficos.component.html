@@ -1,0 +1,77 @@
+<div class="container-fluid mt-3">
+  <div class="row mb-3">
+    <div class="col">
+      <h2><i class="bi bi-bar-chart-fill text-primary me-2"></i>Gráficos</h2>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Ventas Mensuales – Barras Verticales</h5>
+        </div>
+        <div class="card-body d-flex justify-content-center">
+          <ngx-charts-bar-vertical
+            [view]="view()"
+            [scheme]="colorScheme"
+            [results]="datosBarras()"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            xAxisLabel="Mes"
+            yAxisLabel="Unidades"
+            (select)="onSelect($event)">
+          </ngx-charts-bar-vertical>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Comparativa Anual – Líneas</h5>
+        </div>
+        <div class="card-body d-flex justify-content-center">
+          <ngx-charts-line-chart
+            [view]="view()"
+            [scheme]="colorScheme"
+            [results]="datosLineas()"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            xAxisLabel="Mes"
+            yAxisLabel="Unidades"
+            (select)="onSelect($event)">
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12 col-lg-6 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning">
+          <h5 class="mb-0">Participación por Categoría – Torta</h5>
+        </div>
+        <div class="card-body d-flex justify-content-center">
+          <ngx-charts-pie-chart
+            [view]="view()"
+            [scheme]="colorScheme"
+            [results]="datosTorta()"
+            [legend]="true"
+            [labels]="true"
+            (select)="onSelect($event)">
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

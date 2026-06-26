@@ -47,4 +47,15 @@ export class Auth {
   getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  loginConGoogle(idToken: string) {
+    return this.http.post('http://localhost:3000/google-login', { idToken }).pipe(
+      map((resp: any) => {
+        localStorage.setItem('token', resp.token);
+        localStorage.setItem('usuario', JSON.stringify(resp.user));
+        this.isAuthenticated.set(true);
+        this.router.navigate(['/home']);
+      })
+    );
+  }
 }
