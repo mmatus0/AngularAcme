@@ -47,6 +47,18 @@
             </a>
           </li>
           <li>
+            <a [routerLink]="['mapa']">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span class="nav-label">Mapa</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['graficos']">
+              <i class="bi bi-bar-chart-fill"></i>
+              <span class="nav-label">Gráficos</span>
+            </a>
+          </li>
+          <li>
             <a href="#">
               <i class="bi bi-speedometer"></i>
               <span class="nav-label">Dashboard</span>
@@ -58,7 +70,7 @@
               <span class="nav-label">Administración</span>
               <span class="bi bi-chevron-right"></span>
             </a>
-            <ul class="sub-menu collapse" id="productos">
+            <ul class="sub-menu collapse" id="administracion">
               <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i> Administrar</a></li>
               <li><a [routerLink]="['product-pagination']"><i class="bi bi-list-ul"></i> Paginación</a></li>
               <li><a href="#">Ver fichas</a></li>

@@ -14,8 +14,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload());
 
 const SECRET_KEY = 'clave_secreta_acme';
+const GOOGLE_CLIENT_ID = '98858807989-051v8qdj86nv2pbpccp1pfdagntdhrpo.apps.googleusercontent.com';
 
-// CORS — se agrega Authorization para permitir el token en los headers
+// CORS
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -56,7 +57,7 @@ function verificarToken(req, res, next) {
     if (!authHeader) {
         return res.status(401).json({ ok: false, mensaje: 'Token no proporcionado' });
     }
-    const token = authHeader.split(' ')[1]; // Bearer <token>
+    const token = authHeader.split(' ')[1];
     jwt.verify(token, SECRET_KEY, (err, decoded) => {
         if (err) {
             return res.status(401).json({ ok: false, mensaje: 'Token inválido o expirado' });
@@ -93,14 +94,12 @@ app.post('/login', (req, res) => {
 
         const usuario = results[0];
 
-        // Generar token JWT con datos del usuario, expira en 24 horas
         const token = jwt.sign(
             { userId: usuario.userId, userEmail: usuario.userEmail, userRole: usuario.userRole },
             SECRET_KEY,
             { expiresIn: '24h' }
         );
 
-        // Guardar token en la BD
         conn.query('UPDATE usuarios SET userToken = ? WHERE userId = ?', [token, usuario.userId]);
 
         res.status(200).json({
@@ -117,7 +116,70 @@ app.post('/login', (req, res) => {
     });
 });
 
-// GET - Obtener todos los productos (protegido con token)
+// POST - Login con Google
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+app.post('/google-login', async (req, res) => {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ ok: false, mensaje: 'Token requerido' });
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: GOOGLE_CLIENT_ID
+        });
+        const { email, name, picture } = ticket.getPayload();
+
+        conn.query('SELECT * FROM usuarios WHERE userEmail = ?', [email], (err, results) => {
+            if (err) return res.status(500).json({ ok: false, mensaje: err.message });
+
+            if (results.length > 0) {
+                // Usuario existente
+                generarTokenGoogle(results[0], res);
+            } else {
+                // Crear usuario nuevo con datos de Google
+                const sql = `INSERT INTO usuarios (userName, userEmail, userPassword, userRole, userImg)
+                             VALUES (?, ?, '', 'user', ?)`;
+                conn.query(sql, [name, email, picture], (err2, result2) => {
+                    if (err2) return res.status(500).json({ ok: false, mensaje: err2.message });
+                    const nuevoUsuario = {
+                        userId:    result2.insertId,
+                        userName:  name,
+                        userEmail: email,
+                        userRole:  'user',
+                        userImg:   picture
+                    };
+                    generarTokenGoogle(nuevoUsuario, res);
+                });
+            }
+        });
+
+    } catch (e) {
+        console.error('Error verificando token Google:', e);
+        return res.status(401).json({ ok: false, mensaje: 'Token de Google inválido' });
+    }
+});
+
+function generarTokenGoogle(usuario, res) {
+    const token = jwt.sign(
+        { userId: usuario.userId, userEmail: usuario.userEmail, userRole: usuario.userRole },
+        SECRET_KEY,
+        { expiresIn: '24h' }
+    );
+    return res.status(200).json({
+        ok: true,
+        token,
+        usuario: {
+            userId:    usuario.userId,
+            userName:  usuario.userName,
+            userEmail: usuario.userEmail,
+            userRole:  usuario.userRole,
+            userImg:   usuario.userImg || null
+        }
+    });
+}
+
+// GET - Obtener todos los productos
 app.get('/productos', verificarToken, (req, res) => {
     const sql = 'SELECT * FROM productos';
     conn.query(sql, (err, results) => {
