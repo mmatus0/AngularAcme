@@ -10,6 +10,8 @@ import { UserComponent } from './features/users/components/user/user';
 import { ProductPagination } from './features/products/components/product-pagination/product-pagination';
 import { MapaComponent } from './features/mapa/components/mapa/mapa.component';
 import { GraficosComponent } from './features/graficos/components/graficos/graficos.component';
+import { RecuperarPasswordComponent } from './features/auth/components/recuperar-password/recuperar-password.component';
+import { ResetPasswordComponent } from './features/auth/components/reset-password/reset-password.component';
 
 export const routes: Routes = [
     { path: 'home',               component: Welcome,           canActivate: [loginGuard] },
@@ -20,7 +22,8 @@ export const routes: Routes = [
     { path: 'mapa',     component: MapaComponent,     canActivate: [loginGuard] },
     { path: 'graficos', component: GraficosComponent,  canActivate: [loginGuard] },
     { path: 'login',              component: Login },
-
+    { path: 'recuperar-password', component: RecuperarPasswordComponent },
+    { path: 'reset-password',     component: ResetPasswordComponent },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: '**', component: PageNotFound }
 ];

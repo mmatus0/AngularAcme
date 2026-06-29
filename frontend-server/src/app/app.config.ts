@@ -1,26 +1,19 @@
 import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
-import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    { provide: LOCALE_ID, useValue: 'es-CL' },
+    { provide: LOCALE_ID, useValue: 'es' },
     provideRouter(routes),
     provideHttpClient(),
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('98858807989-051v8qdj86nv2pbpccp1pfdagntdhrpo.apps.googleusercontent.com')
-          }
-        ]
-      } as SocialAuthServiceConfig
-    }
+    provideAnimations(),
   ]
 };

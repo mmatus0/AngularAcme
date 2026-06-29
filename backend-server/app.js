@@ -386,6 +386,85 @@ app.get('/existeproducto/:code', verificarToken, (req, res) => {
     });
 });
 
+// POST - Solicitar recuperación de contraseña
+app.post('/recuperar-password', (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ ok: false, mensaje: 'Email requerido' });
+
+    conn.query('SELECT * FROM usuarios WHERE userEmail = ?', [email], (err, results) => {
+        if (err) return res.status(500).json({ ok: false, mensaje: err.message });
+        if (results.length === 0) return res.status(404).json({ ok: false, mensaje: 'Email no registrado' });
+
+        const usuario = results[0];
+
+        // Generar token temporal de 15 minutos
+        const resetToken = jwt.sign(
+            { userId: usuario.userId, userEmail: usuario.userEmail },
+            SECRET_KEY,
+            { expiresIn: '15m' }
+        );
+
+        // Guardar token en BD
+        conn.query('UPDATE usuarios SET resetToken = ? WHERE userId = ?', [resetToken, usuario.userId], (err2) => {
+            if (err2) return res.status(500).json({ ok: false, mensaje: err2.message });
+
+            // Enviar email con link
+            const link = `http://localhost:4200/reset-password?token=${resetToken}`;
+            const msg = `
+                <h3>Recuperación de Contraseña - AngularAcme</h3>
+                <p>Hola <strong>${usuario.userName}</strong>,</p>
+                <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+                <p>Haz click en el siguiente enlace (válido por 15 minutos):</p>
+                <a href="${link}" style="background:#007bff;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
+                    Restablecer Contraseña
+                </a>
+                <p>Si no solicitaste esto, ignora este email.</p>
+            `;
+
+            const mailOptions = {
+                from: 'AngularAcme',
+                to: email,
+                subject: 'Recuperación de Contraseña',
+                generateTextFromHTML: true,
+                html: msg
+            };
+
+            smptTransport.sendMail(mailOptions, (errMail) => {
+                if (errMail) {
+                    console.log(errMail);
+                    return res.status(500).json({ ok: false, mensaje: 'Error al enviar email' });
+                }
+                smptTransport.close();
+                res.status(200).json({ ok: true, mensaje: 'Email de recuperación enviado' });
+            });
+        });
+    });
+});
+
+// POST - Restablecer contraseña
+app.post('/reset-password', (req, res) => {
+    const { token, nuevaPassword } = req.body;
+    if (!token || !nuevaPassword) return res.status(400).json({ ok: false, mensaje: 'Datos incompletos' });
+
+    // Verificar token
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({ ok: false, mensaje: 'Token inválido o expirado' });
+
+        // Verificar que el token coincida con el guardado en BD
+        conn.query('SELECT * FROM usuarios WHERE userId = ? AND resetToken = ?', [decoded.userId, token], (err2, results) => {
+            if (err2) return res.status(500).json({ ok: false, mensaje: err2.message });
+            if (results.length === 0) return res.status(401).json({ ok: false, mensaje: 'Token inválido' });
+
+            // Actualizar contraseña y limpiar token
+            conn.query('UPDATE usuarios SET userPassword = ?, resetToken = NULL WHERE userId = ?',
+                [nuevaPassword, decoded.userId], (err3) => {
+                    if (err3) return res.status(500).json({ ok: false, mensaje: err3.message });
+                    res.status(200).json({ ok: true, mensaje: 'Contraseña actualizada correctamente' });
+                });
+        });
+    });
+});
+
 // Escuchar peticiones
 app.listen(3000, function () {
     console.log('Servidor backend escuchando en puerto 3000');
