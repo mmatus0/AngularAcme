@@ -8,13 +8,40 @@ var jwt = require('jsonwebtoken');
 
 const bodyParser = require('body-parser');
 const { OAuth2Client } = require('google-auth-library');
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload());
 
 const SECRET_KEY = 'clave_secreta_acme';
+
+// Google Sign-In
 const GOOGLE_CLIENT_ID = '98858807989-051v8qdj86nv2pbpccp1pfdagntdhrpo.apps.googleusercontent.com';
+
+// Nodemailer - Gmail OAuth2
+const EMAIL_CLIENT_ID     = '98858807989-dvdce798h182a42t7id5u94d7mhg6hdk.apps.googleusercontent.com';
+const EMAIL_CLIENT_SECRET = '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';
+const EMAIL_REDIRECT_URI  = 'https://developers.google.com/oauthplayground';
+const EMAIL_REFRESH_TOKEN = '1//04kSQ1s_UZM-0CgYIARAAGAQSNwF-L9Ir2shSXz6FUduh7dCX7g5qWEDPs7-wCPgbQ5iPlbQ-Dn8WxLxs-8O_p2To4xw3eK3yMzY';
+const EMAIL_USER          = 'gmatusz85@gmail.com'; // <-- reemplazar con tu Gmail
+
+const OAuth2 = google.auth.OAuth2;
+const oauth2Client = new OAuth2(EMAIL_CLIENT_ID, EMAIL_CLIENT_SECRET, EMAIL_REDIRECT_URI);
+oauth2Client.setCredentials({ refresh_token: EMAIL_REFRESH_TOKEN });
+
+const smptTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        type: 'OAuth2',
+        user: EMAIL_USER,
+        clientId: EMAIL_CLIENT_ID,
+        clientSecret: EMAIL_CLIENT_SECRET,
+        refreshToken: EMAIL_REFRESH_TOKEN,
+        accessToken: oauth2Client.getAccessToken()
+    }
+});
 
 // CORS
 app.use((req, res, next) => {
@@ -134,10 +161,8 @@ app.post('/google-login', async (req, res) => {
             if (err) return res.status(500).json({ ok: false, mensaje: err.message });
 
             if (results.length > 0) {
-                // Usuario existente
                 generarTokenGoogle(results[0], res);
             } else {
-                // Crear usuario nuevo con datos de Google
                 const sql = `INSERT INTO usuarios (userName, userEmail, userPassword, userRole, userImg)
                              VALUES (?, ?, '', 'user', ?)`;
                 conn.query(sql, [name, email, picture], (err2, result2) => {
@@ -178,6 +203,48 @@ function generarTokenGoogle(usuario, res) {
         }
     });
 }
+
+// POST - Enviar email de prueba
+app.post('/email-test', (req, res) => {
+    const msg = `
+        <h3>
+            <span style="background-color: #ffcc00;">
+                Envío de Email con NodeJS - Nodemailer y GMail
+            </span>
+        </h3>
+        <p>Este es un <strong>email de ejemplo</strong> utilizando
+            <span style="color: #ff0000;">Nodemailer</span> y <em>NodeJS</em>.
+        </p>
+        <ul>
+            <li>Permite formato HTML</li>
+            <li>Permite adjuntar archivos</li>
+            <li>Se utiliza una cuenta GMail configurada con OAuth2</li>
+        </ul>
+    `;
+
+    const { email_adress } = req.body;
+
+    const mailOptions = {
+        from: 'AngularAcme',
+        to: email_adress,
+        subject: 'Email de ejemplo con Nodemailer',
+        generateTextFromHTML: true,
+        html: msg
+    };
+
+    smptTransport.sendMail(mailOptions, (err, response) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ ok: false, mensaje: err.message });
+        }
+        console.log(response);
+        smptTransport.close();
+        res.status(200).json({
+            ok: true,
+            mensaje: 'Email enviado correctamente'
+        });
+    });
+});
 
 // GET - Obtener todos los productos
 app.get('/productos', verificarToken, (req, res) => {
